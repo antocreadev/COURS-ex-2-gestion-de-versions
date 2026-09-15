@@ -1,0 +1,14 @@
+# Les propriétaires sont automatiquement demandés en revue sur toute PR
+# touchant les fichiers correspondants.
+#
+# Syntaxe : <motif>  @utilisateur-ou-@org/equipe
+# À adapter avec les identifiants GitHub réels de votre promotion.
+
+# Par défaut : l'équipe pédagogique relit tout.
+*                       @ORG/enseignants
+
+# L'outillage critique n'est modifié qu'avec l'accord de l'enseignant.
+/.github/               @ORG/enseignants
+/.pre-commit-config.yaml @ORG/enseignants
+/pyproject.toml         @ORG/enseignants
+/Makefile               @ORG/enseignants

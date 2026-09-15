@@ -1,0 +1,143 @@
+# ---------------------------------------------------------------------------
+# Intégration continue.
+#
+# Lu de haut en bas, ce fichier répond à trois questions :
+#   QUAND ?  -> `on:`    (à chaque push sur main et à chaque Pull Request)
+#   OÙ ?     -> `runs-on:` (une machine Ubuntu neuve, fournie par GitHub)
+#   QUOI ?   -> `steps:`  (les mêmes commandes que `make check` en local)
+# ---------------------------------------------------------------------------
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: # permet de relancer la CI à la main depuis l'onglet Actions
+
+# Si vous poussez un nouveau commit sur une PR, l'exécution précédente est
+# annulée : inutile de payer deux fois pour un résultat périmé.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_DEFAUT: "3.12"
+
+jobs:
+  # --- Job 1 : qualité du code (rapide, échoue vite) ----------------------
+  qualite:
+    name: Lint & types
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v5
+
+      - name: Installer Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_DEFAUT }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Installer les dépendances
+        run: python -m pip install -e ".[dev]"
+
+      - name: Linter (ruff)
+        run: ruff check --output-format=github .
+
+      - name: Formatage (ruff format)
+        run: ruff format --check --diff .
+
+      - name: Types (mypy)
+        run: mypy
+
+  # --- Job 2 : tests sur plusieurs versions de Python ---------------------
+  tests:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # on veut voir TOUTES les versions qui cassent, pas la première
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v5
+
+      - name: Installer Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Installer les dépendances
+        run: python -m pip install -e ".[dev]"
+
+      - name: Lancer les tests
+        run: pytest --junitxml=rapport-tests.xml --cov-report=xml
+
+      - name: Résumé de la couverture dans l'onglet Actions
+        if: always()
+        run: |
+          {
+            echo "### Couverture — Python ${{ matrix.python-version }}"
+            echo ''
+            echo '```'
+            coverage report || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Conserver les rapports (téléchargeables depuis l'onglet Actions)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-python-${{ matrix.python-version }}
+          path: |
+            rapport-tests.xml
+            coverage.xml
+          retention-days: 7
+
+  # --- Job 3 : les hooks passent-ils sur TOUT le dépôt ? ------------------
+  hooks:
+    name: pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_DEFAUT }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: python -m pip install -e ".[dev]"
+      - name: Mettre en cache les environnements de pre-commit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Exécuter tous les hooks sur tous les fichiers
+        # `no-commit-to-branch` n'a pas de sens ici : la CI tourne parfois
+        # directement sur main. On le désactive uniquement dans ce contexte.
+        env:
+          SKIP: no-commit-to-branch
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  # --- Job 4 : le verrou unique exigé par la protection de branche --------
+  # Un seul check à cocher dans les réglages GitHub, quel que soit le nombre
+  # de jobs au-dessus. C'est le job qui doit être « requis ».
+  ci-ok:
+    name: CI OK
+    runs-on: ubuntu-latest
+    needs: [qualite, tests, hooks]
+    if: always()
+    steps:
+      - name: Vérifier qu'aucun job n'a échoué
+        run: |
+          echo "Résultats : qualite=${{ needs.qualite.result }} tests=${{ needs.tests.result }} hooks=${{ needs.hooks.result }}"
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "::error::Au moins un job de la CI a échoué. Ouvrez le job en rouge ci-dessus pour lire la trace."
+            exit 1
+          fi
+          echo "Tous les contrôles sont passés."

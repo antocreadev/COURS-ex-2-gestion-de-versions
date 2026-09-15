@@ -1,0 +1,44 @@
+name: 🐞 Signaler un bogue
+description: Le programme ne fait pas ce qu'il devrait faire.
+title: "fix: "
+labels: [bogue]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Un bon rapport de bogue tient en trois éléments :
+        **ce que vous avez fait**, **ce que vous attendiez**, **ce qui s'est passé**.
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Comment reproduire ?
+      description: La commande exacte ou le bout de code minimal.
+      placeholder: |
+        tpgit moyenne 10 20 --coefficients 1
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Comportement attendu
+    validations:
+      required: true
+
+  - type: textarea
+    id: obtenu
+    attributes:
+      label: Comportement observé
+      description: Collez la trace d'erreur complète si elle existe.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version de Python
+      placeholder: "3.12.4"
+    validations:
+      required: false

@@ -1,0 +1,22 @@
+# Dependabot ouvre automatiquement des Pull Requests pour mettre à jour
+# les dépendances. C'est un excellent support de TP : de vraies PR à relire,
+# avec une CI qui dit immédiatement si la mise à jour casse quelque chose.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [dépendances]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci(deps)"
+    labels: [dépendances, ci]

@@ -1,0 +1,70 @@
+# Hooks Git gérés par pre-commit (https://pre-commit.com).
+#
+# Installation (une seule fois par clone) :
+#     make hooks
+# Exécution manuelle sur tout le dépôt :
+#     pre-commit run --all-files
+# Mise à jour des versions :
+#     pre-commit autoupdate
+
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
+fail_fast: false
+
+repos:
+  # --- Hygiène générale des fichiers -------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: supprime les espaces en fin de ligne
+      - id: end-of-file-fixer
+        name: garantit une ligne vide en fin de fichier
+      - id: mixed-line-ending
+        name: normalise les fins de ligne (LF)
+        args: [--fix=lf]
+      - id: check-yaml
+        name: valide la syntaxe des fichiers YAML
+      - id: check-toml
+        name: valide la syntaxe des fichiers TOML
+      - id: check-merge-conflict
+        name: detecte les marqueurs de conflit oublies
+      - id: check-added-large-files
+        name: refuse les fichiers de plus de 500 ko
+        args: [--maxkb=500]
+      - id: no-commit-to-branch
+        name: interdit de commiter directement sur main
+        args: [--branch, main]
+
+  # --- Qualité du code Python --------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.7
+    hooks:
+      - id: ruff-check
+        name: ruff (linter)
+        args: [--fix]
+      - id: ruff-format
+        name: ruff (formateur)
+
+  # --- Hooks locaux -------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: message-de-commit
+        name: valide le format du message de commit
+        entry: python scripts/verifier_message_commit.py
+        language: system
+        stages: [commit-msg]
+
+      - id: mypy
+        name: mypy (types)
+        entry: mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: pytest
+        name: pytest (avant push uniquement)
+        entry: pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-push]

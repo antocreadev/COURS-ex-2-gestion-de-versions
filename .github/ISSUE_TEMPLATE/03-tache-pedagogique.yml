@@ -1,0 +1,43 @@
+name: 🎓 Tâche de TP
+description: Sujet de contribution proposé par l'équipe pédagogique.
+title: "feat: "
+labels: [bonne-première-issue]
+body:
+  - type: textarea
+    id: objectif
+    attributes:
+      label: Objectif
+    validations:
+      required: true
+
+  - type: textarea
+    id: indications
+    attributes:
+      label: Indications
+      description: Fichiers concernés, pistes, pièges connus.
+    validations:
+      required: false
+
+  - type: textarea
+    id: criteres
+    attributes:
+      label: Critères d'acceptation
+      value: |
+        - [ ] Branche nommée selon la convention (`feat/…`, `fix/…`)
+        - [ ] Commits au format Conventional Commits
+        - [ ] Tests ajoutés, couverture ≥ 90 %
+        - [ ] CI verte
+        - [ ] PR relue et approuvée par un binôme
+    validations:
+      required: true
+
+  - type: dropdown
+    id: difficulte
+    attributes:
+      label: Difficulté
+      options:
+        - Facile
+        - Moyenne
+        - Difficile
+    validations:
+      required: true

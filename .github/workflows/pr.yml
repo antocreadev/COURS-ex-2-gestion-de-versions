@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------------------
+# Contrôles portant sur la Pull Request elle-même (et non sur le code).
+# Pédagogiquement : montrer qu'une CI ne vérifie pas que du code, mais aussi
+# les conventions de collaboration.
+# ---------------------------------------------------------------------------
+name: Pull Request
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  conventions:
+    name: Conventions de PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Le titre suit-il Conventional Commits ?
+        env:
+          TITRE: ${{ github.event.pull_request.title }}
+        run: |
+          motif='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?!?: .+'
+          if ! printf '%s' "$TITRE" | grep -Eq "$motif"; then
+            echo "::error::Titre de PR invalide : « $TITRE »"
+            echo "::error::Format attendu : type(portée): description — ex. « feat(stats): ajoute la médiane »"
+            exit 1
+          fi
+          echo "Titre valide : $TITRE"
+
+      - name: La description est-elle remplie ?
+        env:
+          CORPS: ${{ github.event.pull_request.body }}
+        run: |
+          if [ "$(printf '%s' "$CORPS" | tr -d '[:space:]' | wc -c)" -lt 40 ]; then
+            echo "::error::La description de la PR est vide ou trop courte."
+            echo "::error::Expliquez le POURQUOI du changement, pas seulement le QUOI."
+            exit 1
+          fi
+          echo "Description renseignée."
+
+      - name: La PR reste-t-elle relisible ? (avertissement)
+        env:
+          AJOUTS: ${{ github.event.pull_request.additions }}
+          SUPPRESSIONS: ${{ github.event.pull_request.deletions }}
+          FICHIERS: ${{ github.event.pull_request.changed_files }}
+        run: |
+          total=$((AJOUTS + SUPPRESSIONS))
+          echo "Diff : +$AJOUTS / -$SUPPRESSIONS sur $FICHIERS fichier(s)."
+          if [ "$total" -gt 400 ]; then
+            echo "::warning::Diff de $total lignes. Au-delà de ~400 lignes, la qualité d'une relecture chute fortement : découpez en plusieurs PR quand c'est possible."
+          fi

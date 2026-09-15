@@ -1,0 +1,33 @@
+name: ✨ Proposer une fonctionnalité
+description: Ajouter un comportement qui n'existe pas encore.
+title: "feat: "
+labels: [fonctionnalité]
+body:
+  - type: textarea
+    id: besoin
+    attributes:
+      label: Quel besoin ?
+      description: Décrivez le problème utilisateur, pas la solution technique.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposition
+    attributes:
+      label: Solution proposée
+      description: Signature de fonction envisagée, comportement attendu, exemples.
+    validations:
+      required: true
+
+  - type: textarea
+    id: criteres
+    attributes:
+      label: Critères d'acceptation
+      description: Comment saura-t-on que c'est terminé ?
+      value: |
+        - [ ] La fonction est implémentée et documentée (docstring Google)
+        - [ ] Elle est typée et passe `mypy`
+        - [ ] Les cas limites sont testés (série vide, valeurs hors barème…)
+        - [ ] `make check` est vert
+    validations:
+      required: true
