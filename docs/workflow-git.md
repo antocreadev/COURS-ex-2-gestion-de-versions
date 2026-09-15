@@ -30,14 +30,23 @@ Deux idées à retenir :
 
 ---
 
-## Étape 0 — Cloner et s'installer (une seule fois)
+## Étape 0 — Créer votre dépôt et s'installer (une seule fois)
+
+Le dépôt de cours sert de **point de départ** : vous ne poussez pas dessus. Vous
+en faites une copie sur votre compte, et c'est là que tout se passe.
 
 ```bash
-git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git
-cd COURS-ex-2-gestion-de-versions
+git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git tp-gestion-de-versions
+cd tp-gestion-de-versions
+./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_DU_BINOME
+
 make install
 make hooks
 make check        # doit être vert AVANT toute modification
+```
+
+```bash
+git remote -v     # origin = le vôtre ; depart = le dépôt de cours (lecture seule)
 ```
 
 Si `make check` est déjà rouge sur un dépôt fraîchement cloné, ne codez pas :

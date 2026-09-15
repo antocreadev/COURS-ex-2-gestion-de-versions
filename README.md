@@ -19,22 +19,82 @@ et la revue par les pairs.
 
 ## 1. Démarrage rapide
 
-```bash
-# 1. Récupérer le dépôt
-git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git
-cd COURS-ex-2-gestion-de-versions
+Ce dépôt est le **point de départ**, pas votre terrain de jeu : vous n'avez pas
+le droit d'y pousser. Vous allez en faire **votre propre dépôt**, sur votre
+compte GitHub — c'est là que vivront vos branches, vos PR, votre CI et vos
+revues.
 
-# 2. Créer l'environnement et installer le projet + les outils de qualité
+```bash
+# 1. Récupérer le projet de départ
+git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git tp-gestion-de-versions
+cd tp-gestion-de-versions
+
+# 2. En faire VOTRE dépôt GitHub (crée le dépôt, pousse, protège main, crée les issues)
+gh auth login                                             # une seule fois par machine
+./scripts/creer-mon-depot.sh tp-gestion-de-versions <login-github-de-votre-binome>
+
+# 3. Créer l'environnement et installer le projet + les outils de qualité
 make install
 
-# 3. Installer les hooks Git (très important : voir §4)
+# 4. Installer les hooks Git (très important : voir §4)
 make hooks
 
-# 4. Vérifier que tout est vert chez vous, comme dans la CI
+# 5. Vérifier que tout est vert chez vous, comme dans la CI
 make check
 ```
 
 Si `make check` est vert, vous êtes prêt à contribuer.
+
+<details>
+<summary>Ce que fait exactement <code>creer-mon-depot.sh</code> (et comment le faire à la main)</summary>
+
+```bash
+git remote rename origin depart          # on garde un lien vers le dépôt de cours
+gh repo create tp-gestion-de-versions --public --source=. --remote=origin --push
+
+# votre binôme doit pouvoir pousser et vous relire
+gh api -X PUT repos/VOUS/tp-gestion-de-versions/collaborators/BINOME -f permission=push
+
+# squash uniquement, suppression automatique des branches mergées
+gh api -X PATCH repos/VOUS/tp-gestion-de-versions \
+  -F allow_squash_merge=true -F allow_merge_commit=false \
+  -F allow_rebase_merge=false -F delete_branch_on_merge=true
+
+# main devient inaccessible en écriture directe
+gh api -X PUT repos/VOUS/tp-gestion-de-versions/branches/main/protection \
+  -F 'required_status_checks[strict]=true' \
+  -f 'required_status_checks[contexts][]=CI OK' \
+  -f 'required_status_checks[contexts][]=Conventions de PR' \
+  -F 'required_pull_request_reviews[required_approving_review_count]=1' \
+  -F 'required_conversation_resolution=true' \
+  -F 'enforce_admins=false' -F 'allow_force_pushes=false' -F 'restrictions=null'
+
+./scripts/creer_issues.sh VOUS/tp-gestion-de-versions
+```
+
+Après quoi vous avez **deux dépôts distants** :
+
+| Nom | Pointe vers | Vous pouvez… |
+|---|---|---|
+| `origin` | votre dépôt | pousser des branches, ouvrir des PR |
+| `depart` | le dépôt de cours | seulement lire (`git fetch depart`) |
+</details>
+
+<details>
+<summary>Sans <code>gh</code> : créer le dépôt depuis le site</summary>
+
+1. github.com → **New repository** → nom `tp-gestion-de-versions`, **Public**,
+   **sans** README ni .gitignore (le dépôt doit être vide).
+2. Puis, dans votre clone :
+   ```bash
+   git remote rename origin depart
+   git remote add origin https://github.com/VOTRE-LOGIN/tp-gestion-de-versions.git
+   git push -u origin main
+   ```
+3. Settings → Collaborators → ajouter votre binôme.
+4. Settings → Branches → Add branch ruleset (voir la liste des cases à cocher
+   dans [`docs/mise-en-place-enseignant.md`](docs/mise-en-place-enseignant.md) §3).
+</details>
 
 <details>
 <summary>Sans <code>make</code> (Windows / PowerShell)</summary>
@@ -44,10 +104,21 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -e ".[dev]"
 pre-commit install --install-hooks
-pre-commit install --hook-type commit-msg
 ruff check . ; ruff format --check . ; mypy ; pytest
 ```
 </details>
+
+### Récupérer une mise à jour du dépôt de cours
+
+Si l'enseignant corrige quelque chose après que vous avez créé votre dépôt :
+
+```bash
+git fetch depart
+git switch -c chore/mise-a-jour-depart
+git merge depart/main
+make check
+git push -u origin chore/mise-a-jour-depart   # puis PR, comme d'habitude
+```
 
 ---
 
@@ -59,6 +130,7 @@ ruff check . ; ruff format --check . ; mypy ; pytest
 | `tests/` | Les tests `pytest` |
 | `pyproject.toml` | **Une seule** source de config : projet, ruff, mypy, pytest, coverage |
 | `.pre-commit-config.yaml` | Les hooks Git exécutés **avant** chaque commit |
+| `scripts/creer-mon-depot.sh` | Transforme ce clone en **votre** dépôt GitHub configuré |
 | `scripts/verifier_message_commit.py` | Hook `commit-msg` : valide le format des messages |
 | `.github/workflows/ci.yml` | La CI : lint, types, tests, couverture |
 | `.github/workflows/pr.yml` | Contrôles propres à la Pull Request (titre, taille) |

@@ -1,11 +1,33 @@
 # TP 3 — Revue de code et conflits de merge
 
-**Durée :** ~1 h 30 · **Par groupes de 2 binômes** (A et B)
+**Durée :** ~1 h 35 · **Par groupes de 2 binômes** (A et B), sur **un seul** dépôt
 
 ## Objectif
 
 1. Provoquer un vrai conflit de merge et le résoudre proprement.
 2. Mener une revue de code structurée et argumentée.
+
+---
+
+## Mise en place (5 min)
+
+Ce TP demande **quatre personnes sur un seul dépôt**. Choisissez le dépôt du
+binôme A ; son propriétaire y ajoute les deux membres du binôme B :
+
+```bash
+gh api -X PUT repos/PROPRIETAIRE_A/tp-gestion-de-versions/collaborators/LOGIN_B1 -f permission=push
+gh api -X PUT repos/PROPRIETAIRE_A/tp-gestion-de-versions/collaborators/LOGIN_B2 -f permission=push
+```
+
+Le binôme B accepte l'invitation, puis clone ce dépôt :
+
+```bash
+gh repo clone PROPRIETAIRE_A/tp-gestion-de-versions tp-conflits
+cd tp-conflits && make install && make hooks && make check
+```
+
+Tout le monde travaille désormais sur le **même** `main`. C'est exactement la
+situation qui produit des conflits — et c'est le but.
 
 ---
 

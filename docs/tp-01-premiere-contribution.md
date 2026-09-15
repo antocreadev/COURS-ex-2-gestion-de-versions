@@ -1,6 +1,6 @@
 # TP 1 — Votre première contribution de bout en bout
 
-**Durée :** ~2 h · **Binômes :** oui (mais chacun ouvre sa propre PR)
+**Durée :** ~2 h 15 · **Binômes :** oui (mais chacun ouvre sa propre PR)
 
 ## Objectif
 
@@ -17,17 +17,41 @@ push → PR → CI → revue → corrections → merge → ménage.
 
 ---
 
-## Partie A — Installation (15 min)
+## Partie A — Créer votre dépôt et l'installer (20 min)
+
+Le dépôt de cours est en **lecture seule**. Vous allez en faire le vôtre : c'est
+sur *votre* dépôt que vous ouvrirez vos PR et que tournera *votre* CI.
+
+Mettez-vous d'accord dans le binôme : **un seul** dépôt pour les deux, créé par
+l'un de vous, l'autre étant ajouté en collaborateur. Vous vous relirez
+mutuellement.
 
 ```bash
-git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git
-cd COURS-ex-2-gestion-de-versions
+git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git tp-gestion-de-versions
+cd tp-gestion-de-versions
+
+gh auth login                                        # une seule fois par machine
+./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_DU_BINOME
+
 make install
 make hooks
 make check
 ```
 
-✅ **Point de contrôle 1 :** `make check` affiche « Tout est vert ».
+L'autre membre du binôme accepte l'invitation reçue par mail, puis clone le
+dépôt du binôme (et **pas** celui du cours) :
+
+```bash
+gh repo clone LOGIN_DU_CREATEUR/tp-gestion-de-versions
+cd tp-gestion-de-versions && make install && make hooks && make check
+```
+
+✅ **Point de contrôle 1 :** `make check` affiche « Tout est vert », et
+`git remote -v` montre bien `origin` sur **votre** dépôt.
+
+> Le script a aussi protégé votre `main` (aucun push direct, CI obligatoire,
+> 1 approbation) et créé les issues de départ. Vérifiez sur GitHub :
+> onglet **Issues**, puis Settings → Branches.
 
 ### Vérifier que les hooks sont bien actifs
 
@@ -58,6 +82,32 @@ git switch main && git branch -D chore/test-hooks
 ```
 
 ✅ **Point de contrôle 2 :** vous savez reconnaître un refus de hook.
+
+---
+
+## Partie A bis — Échauffement : votre première PR (10 min)
+
+Avant d'attaquer du code, un aller-retour complet sur un changement d'une ligne,
+pour vérifier que toute la chaîne fonctionne.
+
+`.github/CODEOWNERS` contient encore `@antocreadev`, qui n'est pas collaborateur
+de votre dépôt : la règle ne sert donc à rien. Remplacez-le par vos deux logins.
+
+```bash
+git switch -c chore/codeowners-du-binome
+# éditez .github/CODEOWNERS : remplacez @antocreadev par @vous @votre-binome
+git add .github/CODEOWNERS
+git commit -m "chore: désigne le binôme comme propriétaire du code"
+git push -u origin chore/codeowners-du-binome
+gh pr create --fill --web
+```
+
+Observez, dans l'ordre : la CI démarre, les checks apparaissent sous la PR, le
+bouton *Merge* reste grisé tant qu'ils ne sont pas verts et que votre binôme n'a
+pas approuvé. Faites approuver, mergez en *squash*, supprimez la branche.
+
+✅ **Point de contrôle 3 :** vous avez fait un tour complet du cycle en 10
+minutes. Tout le reste du TP, c'est la même chose avec du vrai code.
 
 ---
 
@@ -125,7 +175,7 @@ git commit -m "feat(stats): ajoute le calcul de la variance"
 - Exporter la fonction dans `src/tpgit/__init__.py` si elle est publique.
 - Mettre la documentation à jour si le comportement visible change.
 
-✅ **Point de contrôle 3 :** `make check` est vert et vous avez ≥ 2 commits.
+✅ **Point de contrôle 4 :** `make check` est vert et vous avez ≥ 2 commits.
 
 ---
 
@@ -148,7 +198,7 @@ Remplissez le modèle **complètement** :
 gh pr checks --watch
 ```
 
-✅ **Point de contrôle 4 :** le check `CI OK` est vert.
+✅ **Point de contrôle 5 :** le check `CI OK` est vert.
 
 > Rouge ? C'est prévu au programme. Lisez le job en échec, reproduisez en local
 > (tableau de correspondance dans [`CONTRIBUTING.md`](../CONTRIBUTING.md) §8),
@@ -158,12 +208,22 @@ gh pr checks --watch
 
 ## Partie E — Revue croisée (30 min)
 
-Échangez les numéros de PR avec un autre binôme.
+**Qui relit qui ?** Votre binôme : c'est le seul à avoir un droit d'écriture sur
+votre dépôt, donc le seul dont l'approbation débloque le bouton *Merge*. Vous
+avez chacun ouvert une PR sur des issues différentes : vous vous relisez
+mutuellement.
+
+> Votre dépôt est public : **n'importe qui** peut aussi commenter et relire vos
+> PR. Profitez-en pour échanger vos URL avec un autre binôme — leurs
+> commentaires seront visibles et utiles, simplement leur *Approve* ne comptera
+> pas pour la protection de branche (GitHub n'accepte que les approbations de
+> personnes ayant les droits d'écriture).
 
 ### En tant que relecteur
 
 ```bash
-gh pr checkout <numéro>     # récupérer la branche pour la tester
+gh pr list                  # les PR ouvertes sur le dépôt
+gh pr checkout <numéro>     # récupérer la branche pour la tester chez soi
 make check
 gh pr diff <numéro>
 ```
@@ -186,7 +246,7 @@ git push
 
 La PR et la CI se mettent à jour automatiquement. Redemandez une revue.
 
-✅ **Point de contrôle 5 :** votre PR est approuvée et verte.
+✅ **Point de contrôle 6 :** votre PR est approuvée et verte.
 
 ---
 
@@ -206,7 +266,7 @@ Observez : vos 3–4 commits de branche sont devenus **un seul** commit sur `mai
 intitulé comme votre PR. Votre issue s'est fermée toute seule grâce au
 `Closes #…`.
 
-✅ **Point de contrôle 6 :** `git log --oneline -5` est lisible, `git branch`
+✅ **Point de contrôle 7 :** `git log --oneline -5` est lisible, `git branch`
 ne liste plus votre branche.
 
 ---
