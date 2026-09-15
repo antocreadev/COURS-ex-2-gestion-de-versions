@@ -1,5 +1,7 @@
 # TP — Le cycle de contribution à un projet
 
+[![CI](https://github.com/antocreadev/COURS-ex-2-gestion-de-versions/actions/workflows/ci.yml/badge.svg)](https://github.com/antocreadev/COURS-ex-2-gestion-de-versions/actions/workflows/ci.yml)
+
 > Dépôt support de cours (L3 Informatique).
 > Objectif : vivre **une fois en entier** le cycle qu'on retrouve dans toutes les
 > équipes de développement professionnelles.
@@ -19,8 +21,8 @@ et la revue par les pairs.
 
 ```bash
 # 1. Récupérer le dépôt
-git clone <url-du-depot>
-cd <nom-du-depot>
+git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git
+cd COURS-ex-2-gestion-de-versions
 
 # 2. Créer l'environnement et installer le projet + les outils de qualité
 make install

@@ -3,8 +3,8 @@
 ## 1. Créer le dépôt modèle
 
 ```bash
-gh repo create ORG/tp-cycle-contribution --public --source=. --push
-gh repo edit ORG/tp-cycle-contribution --enable-discussions --template
+gh repo create antocreadev/COURS-ex-2-gestion-de-versions --public --source=. --push
+gh repo edit antocreadev/COURS-ex-2-gestion-de-versions --enable-discussions --template
 ```
 
 L'option `--template` transforme le dépôt en **modèle** : chaque étudiant ou
@@ -12,7 +12,7 @@ binôme peut générer son propre dépôt avec un historique propre.
 
 ```bash
 # côté étudiant
-gh repo create mon-tp-git --template ORG/tp-cycle-contribution --private --clone
+gh repo create mon-tp-git --template antocreadev/COURS-ex-2-gestion-de-versions --private --clone
 ```
 
 ### Deux organisations possibles
@@ -26,18 +26,28 @@ Recommandation : *template* pour le **TP 1**, dépôt commun pour les **TP 2 et 
 
 ---
 
-## 2. Adapter les fichiers à votre contexte
+## 2. Ce qu'il reste éventuellement à adapter
 
-| Fichier | À modifier |
+Tout est déjà réglé pour `antocreadev/COURS-ex-2-gestion-de-versions`. Restent
+deux détails facultatifs :
+
+| Fichier | Quoi |
 |---|---|
-| `.github/CODEOWNERS` | remplacer `@ORG/enseignants` par la vraie équipe GitHub |
-| `.github/ISSUE_TEMPLATE/config.yml` | l'URL des discussions |
-| `README.md`, `docs/*` | les occurrences de `ORG/DEPOT` |
-| `LICENSE` | le nom de l'établissement |
+| `LICENSE` | le nom de l'établissement (ligne « Copyright ») |
+| `.github/ISSUE_TEMPLATE/config.yml` | l'URL des Discussions — valide uniquement si vous les activez (`gh repo edit --enable-discussions`) |
+
+Ajoutez les étudiants comme **collaborateurs** pour qu'ils puissent pousser des
+branches et ouvrir des PR sur le dépôt commun :
 
 ```bash
-grep -rn "ORG/" --include="*.md" --include="*.yml" --include="CODEOWNERS" .
+gh api -X PUT repos/antocreadev/COURS-ex-2-gestion-de-versions/collaborators/LOGIN_ETUDIANT \
+  -f permission=push
 ```
+
+> `permission=push` (rôle *Write*) suffit : avec la protection de `main` du §3,
+> ils pourront créer des branches et des PR, mais **pas** pousser sur `main`.
+> Ne donnez pas `maintain` ou `admin`, qui permettent de contourner la
+> protection.
 
 ---
 
@@ -46,18 +56,32 @@ grep -rn "ORG/" --include="*.md" --include="*.yml" --include="CODEOWNERS" .
 C'est **indispensable** : sans cela, les étudiants pousseront directement sur
 `main` et tout le dispositif pédagogique s'effondre.
 
+> **Deux particularités des dépôts personnels** (par opposition aux dépôts
+> d'organisation) :
+>
+> 1. **Vous ne pouvez pas approuver vos propres PR.** GitHub l'interdit. Si vous
+>    laissez « Required approvals : 1 », vos propres PR de maintenance seront
+>    bloquées. Deux solutions : vous exclure via *Bypass list* (vous restez
+>    soumis à la CI, mais pas à la revue), ou faire approuver par un étudiant.
+>    Les étudiants, eux, s'approuvent entre eux : la règle joue pleinement.
+> 2. **La protection de branche n'est gratuite que sur un dépôt public.** Sur un
+>    dépôt personnel privé, il faut GitHub Pro. Gardez le dépôt de cours
+>    **public**.
+
 Réglages → Branches → *Add branch ruleset* sur `main` :
 
 - ☑️ Require a pull request before merging
   - Required approvals : **1**
   - ☑️ Dismiss stale approvals when new commits are pushed
-  - ☑️ Require review from Code Owners *(si vous voulez valider chaque PR)*
+  - ☐ Require review from Code Owners — **à laisser décoché** ici : le seul
+    *code owner* du dépôt, c'est vous, et vous ne pouvez pas vous approuver
 - ☑️ Require status checks to pass
   - checks requis : **`CI OK`** et **`Conventions de PR`**
   - ☑️ Require branches to be up to date before merging
 - ☑️ Require conversation resolution before merging
 - ☑️ Block force pushes
-- ☐ *Ne pas* cocher « Allow bypass » pour les étudiants
+- *Bypass list* : vous seul, et uniquement si vous devez merger vos propres
+  PR de maintenance. **Jamais** les étudiants.
 
 Dans Réglages → General → Pull Requests :
 
@@ -69,7 +93,7 @@ Dans Réglages → General → Pull Requests :
 En ligne de commande :
 
 ```bash
-gh api -X PUT repos/ORG/DEPOT/branches/main/protection \
+gh api -X PUT repos/antocreadev/COURS-ex-2-gestion-de-versions/branches/main/protection \
   -f 'required_status_checks[strict]=true' \
   -f 'required_status_checks[contexts][]=CI OK' \
   -f 'required_status_checks[contexts][]=Conventions de PR' \
@@ -86,7 +110,7 @@ gh api -X PUT repos/ORG/DEPOT/branches/main/protection \
 ## 4. Créer les issues de départ
 
 ```bash
-./scripts/creer_issues.sh ORG/DEPOT
+./scripts/creer_issues.sh antocreadev/COURS-ex-2-gestion-de-versions
 ```
 
 Le script crée les étiquettes puis une douzaine d'issues calibrées, de
@@ -129,7 +153,7 @@ git log --author="Nom" --oneline
 gh pr list --state merged --author "login" --json number,title,additions,deletions
 
 # Revues effectuées par un étudiant
-gh api "search/issues?q=repo:ORG/DEPOT+reviewed-by:login+type:pr" --jq '.total_count'
+gh api "search/issues?q=repo:antocreadev/COURS-ex-2-gestion-de-versions+reviewed-by:login+type:pr" --jq '.total_count'
 
 # Taux d'échec de CI
 gh run list --limit 100 --json conclusion --jq '[.[].conclusion] | group_by(.) | map({(.[0]): length}) | add'

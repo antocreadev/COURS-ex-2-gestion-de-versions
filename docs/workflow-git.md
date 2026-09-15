@@ -33,8 +33,8 @@ Deux idées à retenir :
 ## Étape 0 — Cloner et s'installer (une seule fois)
 
 ```bash
-git clone <url>
-cd <depot>
+git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git
+cd COURS-ex-2-gestion-de-versions
 make install
 make hooks
 make check        # doit être vert AVANT toute modification

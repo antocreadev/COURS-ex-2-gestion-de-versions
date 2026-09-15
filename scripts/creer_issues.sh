@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Crée les étiquettes et les issues de départ du TP.
 #
-# Usage :  ./scripts/creer_issues.sh [ORG/DEPOT]
+# Usage :  ./scripts/creer_issues.sh [antocreadev/COURS-ex-2-gestion-de-versions]
 # Prérequis : gh CLI authentifié (gh auth login)
 
 set -euo pipefail

@@ -1,14 +1,19 @@
 # Les propriétaires sont automatiquement demandés en revue sur toute PR
 # touchant les fichiers correspondants.
 #
-# Syntaxe : <motif>  @utilisateur-ou-@org/equipe
-# À adapter avec les identifiants GitHub réels de votre promotion.
+# Syntaxe : <motif>  @utilisateur
+#
+# ⚠️ Sur un dépôt personnel, le propriétaire ne peut pas approuver ses propres
+#    PR. Si vous activez « Require review from Code Owners » en plus de
+#    « Required approvals: 1 », vos propres PR seront donc impossibles à merger
+#    sans passer par un second compte (ou sans bypass admin).
+#    Voir docs/mise-en-place-enseignant.md §3.
 
-# Par défaut : l'équipe pédagogique relit tout.
-*                       @ORG/enseignants
+# Par défaut : l'enseignant est demandé en revue sur tout.
+*                        @antocreadev
 
-# L'outillage critique n'est modifié qu'avec l'accord de l'enseignant.
-/.github/               @ORG/enseignants
-/.pre-commit-config.yaml @ORG/enseignants
-/pyproject.toml         @ORG/enseignants
-/Makefile               @ORG/enseignants
+# L'outillage critique du TP ne doit pas être modifié sans validation.
+/.github/                @antocreadev
+/.pre-commit-config.yaml @antocreadev
+/pyproject.toml          @antocreadev
+/Makefile                @antocreadev

@@ -20,8 +20,8 @@ push → PR → CI → revue → corrections → merge → ménage.
 ## Partie A — Installation (15 min)
 
 ```bash
-git clone <url-du-depot>
-cd <depot>
+git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git
+cd COURS-ex-2-gestion-de-versions
 make install
 make hooks
 make check
@@ -227,8 +227,8 @@ ne liste plus votre branche.
 
 ## Pour aller plus loin
 
-- Ajoutez un badge de CI dans le README :
-  `![CI](https://github.com/ORG/DEPOT/actions/workflows/ci.yml/badge.svg)`
+- Ouvrez l'onglet **Insights → Network** : vous *voyez* les branches,
+  les PR et les merges de toute la promo.
 - Regardez une PR de Dependabot et décidez si elle doit être mergée.
 - Lancez `git log --oneline --graph --all` : vous *voyez* le cycle que vous venez
   de parcourir.

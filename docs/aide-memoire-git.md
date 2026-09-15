@@ -120,7 +120,7 @@ git bisect bad && git bisect good <sha>
 
 ```bash
 gh auth login
-gh repo clone ORG/DEPOT
+gh repo clone antocreadev/COURS-ex-2-gestion-de-versions
 
 gh issue list
 gh issue view 12
