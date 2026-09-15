@@ -24,6 +24,10 @@ le droit d'y pousser. Vous allez en faire **votre propre dépôt**, sur votre
 compte GitHub — c'est là que vivront vos branches, vos PR, votre CI et vos
 revues.
 
+**Un seul dépôt par équipe** (binôme, trinôme…) : l'un de vous le crée, les
+autres y sont ajoutés en collaborateurs. Il faut être au moins deux, car GitHub
+interdit d'approuver sa propre Pull Request.
+
 ```bash
 # 1. Récupérer le projet de départ
 git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git tp-gestion-de-versions
@@ -31,7 +35,7 @@ cd tp-gestion-de-versions
 
 # 2. En faire VOTRE dépôt GitHub (crée le dépôt, pousse, protège main, crée les issues)
 gh auth login                                             # une seule fois par machine
-./scripts/creer-mon-depot.sh tp-gestion-de-versions <login-github-de-votre-binome>
+./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_COEQUIPIER_1 [LOGIN_COEQUIPIER_2 ...]
 
 # 3. Créer l'environnement et installer le projet + les outils de qualité
 make install
@@ -52,8 +56,8 @@ Si `make check` est vert, vous êtes prêt à contribuer.
 git remote rename origin depart          # on garde un lien vers le dépôt de cours
 gh repo create tp-gestion-de-versions --public --source=. --remote=origin --push
 
-# votre binôme doit pouvoir pousser et vous relire
-gh api -X PUT repos/VOUS/tp-gestion-de-versions/collaborators/BINOME -f permission=push
+# vos coéquipiers doivent pouvoir pousser et vous relire (une ligne chacun)
+gh api -X PUT repos/VOUS/tp-gestion-de-versions/collaborators/COEQUIPIER -f permission=push
 
 # squash uniquement, suppression automatique des branches mergées
 gh api -X PATCH repos/VOUS/tp-gestion-de-versions \
@@ -91,7 +95,7 @@ Après quoi vous avez **deux dépôts distants** :
    git remote add origin https://github.com/VOTRE-LOGIN/tp-gestion-de-versions.git
    git push -u origin main
    ```
-3. Settings → Collaborators → ajouter votre binôme.
+3. Settings → Collaborators → ajouter vos coéquipiers.
 4. Settings → Branches → Add branch ruleset (voir la liste des cases à cocher
    dans [`docs/mise-en-place-enseignant.md`](docs/mise-en-place-enseignant.md) §3).
 </details>
@@ -289,7 +293,7 @@ make aide       # liste les cibles disponibles
 |---|---|
 | [TP 1](docs/tp-01-premiere-contribution.md) | Votre première contribution de bout en bout |
 | [TP 2](docs/tp-02-ci-rouge.md) | Faire échouer la CI volontairement, lire les logs, corriger |
-| [TP 3](docs/tp-03-revue-et-conflits.md) | Relire la PR d'un binôme, résoudre un conflit de merge |
+| [TP 3](docs/tp-03-revue-et-conflits.md) | Relire la PR d'un coéquipier, résoudre un conflit de merge |
 
 Ressources : [`docs/workflow-git.md`](docs/workflow-git.md) ·
 [`docs/aide-memoire-git.md`](docs/aide-memoire-git.md) ·

@@ -1,6 +1,6 @@
 # TP 3 — Revue de code et conflits de merge
 
-**Durée :** ~1 h 35 · **Par groupes de 2 binômes** (A et B), sur **un seul** dépôt
+**Durée :** ~1 h 35 · **Par groupes de 2 équipes** (A et B), sur **un seul** dépôt
 
 ## Objectif
 
@@ -11,15 +11,17 @@
 
 ## Mise en place (5 min)
 
-Ce TP demande **quatre personnes sur un seul dépôt**. Choisissez le dépôt du
-binôme A ; son propriétaire y ajoute les deux membres du binôme B :
+Ce TP demande **deux équipes sur un seul dépôt** (4 personnes si ce sont deux
+binômes, 6 si ce sont deux trinômes). Choisissez le dépôt de l'équipe A ; son
+propriétaire y ajoute tous les membres de l'équipe B — une ligne par personne :
 
 ```bash
 gh api -X PUT repos/PROPRIETAIRE_A/tp-gestion-de-versions/collaborators/LOGIN_B1 -f permission=push
 gh api -X PUT repos/PROPRIETAIRE_A/tp-gestion-de-versions/collaborators/LOGIN_B2 -f permission=push
+# ... etc.
 ```
 
-Le binôme B accepte l'invitation, puis clone ce dépôt :
+L'équipe B accepte l'invitation, puis clone ce dépôt :
 
 ```bash
 gh repo clone PROPRIETAIRE_A/tp-gestion-de-versions tp-conflits
@@ -36,18 +38,18 @@ situation qui produit des conflits — et c'est le but.
 Le conflit n'arrive pas par hasard : il arrive quand deux branches modifient les
 **mêmes lignes**. On va donc le fabriquer.
 
-### 1. Les deux binômes partent du même point
+### 1. Les deux équipes partent du même point
 
 ```bash
 git switch main && git pull --ff-only
 ```
 
-- **Binôme A :** `git switch -c feat/mention-europeenne`
-- **Binôme B :** `git switch -c feat/mention-numerique`
+- **Équipe A :** `git switch -c feat/mention-europeenne`
+- **Équipe B :** `git switch -c feat/mention-numerique`
 
 ### 2. Les deux modifient la fonction `mention`
 
-Dans `src/tpgit/notes.py`, tous deux réécrivent le corps de `mention` :
+Dans `src/tpgit/notes.py`, les deux équipes réécrivent le corps de `mention` :
 
 - **A** renvoie des libellés européens : `"F"`, `"E"`, `"D"`, `"C"`, `"B"`, `"A"`.
 - **B** renvoie un entier de 0 à 5 (et adapte l'annotation de retour).
@@ -57,7 +59,7 @@ pousse.
 
 ### 3. A merge en premier
 
-Le binôme A ouvre sa PR, la fait relire par B, et la merge.
+L'équipe A ouvre sa PR, la fait relire par B, et la merge.
 
 ### 4. B se met à jour
 
@@ -74,7 +76,7 @@ git merge main
 Suivez [`docs/resolution-conflits.md`](resolution-conflits.md).
 
 **Ce n'est pas qu'une manipulation technique : c'est une décision de conception.**
-Discutez à quatre : les deux fonctionnalités sont-elles compatibles ? Faut-il
+Discutez tous ensemble : les deux fonctionnalités sont-elles compatibles ? Faut-il
 
 - garder les deux avec des noms différents (`mention`, `mention_europeenne`) ?
 - un paramètre `format: Literal["fr", "eu", "numerique"]` ?
@@ -98,7 +100,7 @@ conception et pourquoi les autres options ont été écartées.
 
 ### 1. Introduire des défauts
 
-Chaque binôme crée une branche contenant **quatre défauts volontaires** parmi :
+Chaque équipe crée une branche contenant **quatre défauts volontaires** parmi :
 
 | Type de défaut | Exemple |
 |---|---|
@@ -116,7 +118,7 @@ mensongère. Seul un humain les voit.
 
 Ouvrez la PR, notez les 4 défauts sur un papier (sans les publier).
 
-### 2. Relire la PR de l'autre binôme
+### 2. Relire la PR de l'autre équipe
 
 ```bash
 gh pr checkout <numéro>

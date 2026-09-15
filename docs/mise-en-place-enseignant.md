@@ -11,17 +11,26 @@ le cycle (branches, PR, CI, revues, merges) se déroule chez eux.
                      │
           git clone  │
                      ▼
-        clone local d'un binôme
+   clone local d'un membre de l'équipe
                      │
    ./scripts/creer-mon-depot.sh
                      ▼
   etudiant-a/tp-gestion-de-versions              ← leur terrain : PR, CI, revues
-        (etudiant-b ajouté en collaborateur)
+    (etudiant-b, etudiant-c… en collaborateurs)
 ```
+
+**Un dépôt par équipe**, binôme ou trinôme. La seule contrainte est d'être au
+moins **deux** : GitHub interdit d'approuver sa propre PR, donc un étudiant seul
+sur son dépôt ne peut pas satisfaire la règle « 1 approbation requise » (le
+script le détecte et retombe à 0 approbation, mais la revue croisée disparaît —
+c'est justement ce qu'on veut leur faire pratiquer).
+
+En trinôme, faites-leur tourner la relecture en cercle (A relit B, B relit C, C
+relit A) : personne n'attend, et chacun relit exactement une PR.
 
 **Pourquoi pas un dépôt commun à la promo ?** Parce que 30 étudiants qui ouvrent
 des PR sur le même `main` passent leur temps en conflits d'intégration et
-attendent votre merge. Un dépôt par binôme leur donne l'autonomie complète :
+attendent votre merge. Un dépôt par équipe leur donne l'autonomie complète :
 ils configurent la protection, ils relisent, ils mergent. Vous, vous relisez le
 résultat.
 
@@ -35,12 +44,15 @@ demande une validation manuelle à chaque push. Trop de friction pour un TP.
 git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git tp-gestion-de-versions
 cd tp-gestion-de-versions
 gh auth login
-./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_DU_BINOME
+
+# autant de logins que de coéquipiers
+./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_B          # binôme
+./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_B LOGIN_C  # trinôme
 ```
 
 [`scripts/creer-mon-depot.sh`](../scripts/creer-mon-depot.sh) enchaîne : renommage
-de `origin` en `depart`, création du dépôt public, push, ajout du binôme en
-collaborateur, réglage des PR en *squash only*, protection de `main`, puis
+de `origin` en `depart`, création du dépôt public, push, ajout des coéquipiers
+en collaborateurs, réglage des PR en *squash only*, protection de `main`, puis
 création des étiquettes et des 13 issues.
 
 > Le script est volontairement lisible et commenté : c'est aussi un support de
@@ -62,10 +74,10 @@ gh repo create antocreadev/COURS-ex-2-gestion-de-versions --public --source=. --
 |---|---|
 | `LICENSE` | le nom de l'établissement (ligne « Copyright ») |
 | `.github/ISSUE_TEMPLATE/config.yml` | l'URL des Discussions, si vous les activez (`gh repo edit --enable-discussions`) |
-| `.github/CODEOWNERS` | contient `@antocreadev` ; sur le dépôt d'un étudiant, cette ligne est simplement ignorée (vous n'y êtes pas collaborateur). Les faire l'adapter à leur binôme est un bon échauffement de PR. |
+| `.github/CODEOWNERS` | contient `@antocreadev` ; sur le dépôt d'un étudiant, cette ligne est simplement ignorée (vous n'y êtes pas collaborateur). Les faire l'adapter à leur équipe est un bon échauffement de PR. |
 
 Pensez à vous faire ajouter en collaborateur (lecture) sur les dépôts des
-binômes pour pouvoir suivre et noter :
+équipes pour pouvoir suivre et noter :
 
 ```bash
 gh api -X PUT repos/ETUDIANT/tp-gestion-de-versions/collaborators/antocreadev \
@@ -92,12 +104,12 @@ gh api -X PUT repos/antocreadev/COURS-ex-2-gestion-de-versions/branches/main/pro
 ## 3. La protection de `main` chez les étudiants
 
 Le script l'applique automatiquement. Voici ce qu'il règle, à savoir expliquer
-au tableau — et à vérifier si un binôme a fait la manipulation à la main
+au tableau — et à vérifier si une équipe a fait la manipulation à la main
 (Settings → Branches → *Add branch ruleset*) :
 
 - ☑️ Require a pull request before merging
-  - Required approvals : **1** *(0 si le binôme n'a pas été ajouté — on ne peut
-    pas approuver sa propre PR)*
+  - Required approvals : **1** *(0 si aucun coéquipier n'a été ajouté — on ne
+    peut pas approuver sa propre PR)*
   - ☑️ Dismiss stale approvals when new commits are pushed
   - ☐ Require review from Code Owners — inutile ici
 - ☑️ Require status checks to pass
@@ -115,15 +127,15 @@ Dans Settings → General → Pull Requests :
 
 ### Deux pièges des dépôts personnels
 
-1. **On ne peut pas approuver sa propre PR.** D'où l'intérêt du binôme : sans
-   lui, « 1 approbation requise » bloque tout. C'est aussi ce qui force une
-   vraie revue croisée plutôt qu'un auto-merge.
+1. **On ne peut pas approuver sa propre PR.** D'où l'intérêt de l'équipe : seul,
+   « 1 approbation requise » bloque tout. C'est aussi ce qui force une vraie
+   revue croisée plutôt qu'un auto-merge.
 2. **La protection de branche n'est gratuite que sur un dépôt public.** Sur un
    dépôt personnel privé il faut GitHub Pro (gratuit avec
    [GitHub Education](https://education.github.com)). Le plus simple : dépôts
    **publics**.
 
-### Vérifier qu'un binôme a bien tout configuré
+### Vérifier qu'une équipe a bien tout configuré
 
 ```bash
 gh api repos/ETUDIANT/tp-gestion-de-versions/branches/main/protection \
@@ -139,16 +151,16 @@ gh api repos/ETUDIANT/tp-gestion-de-versions/branches/main/protection \
 [`scripts/creer_issues.sh`](../scripts/creer_issues.sh) crée 10 étiquettes et
 **13 issues** calibrées *facile / moyenne / difficile*, chacune avec ses critères
 d'acceptation. Il est appelé automatiquement par `creer-mon-depot.sh`, donc
-**chaque binôme démarre avec ses propres issues** — vous n'avez rien à faire.
+**chaque équipe démarre avec ses propres issues** — vous n'avez rien à faire.
 
-Pour le relancer seul sur un dépôt (ajout d'issues en cours de TP, ou binôme
+Pour le relancer seul sur un dépôt (ajout d'issues en cours de TP, ou équipe
 ayant fait la configuration à la main) :
 
 ```bash
 ./scripts/creer_issues.sh ETUDIANT/tp-gestion-de-versions
 ```
 
-13 issues pour un binôme, c'est volontairement large : ils doivent **choisir**,
+13 issues pour une équipe, c'est volontairement large : ils doivent **choisir**,
 et il doit rester du travail pour les plus rapides. Pour ajouter les vôtres,
 éditez la fonction `issue` en fin de script — le modèle de critères
 d'acceptation est partagé.
@@ -159,9 +171,9 @@ d'acceptation est partagé.
 
 | Séance | Contenu | Livrable |
 |---|---|---|
-| **1** (2 h 15) | Démo du cycle au tableau, puis [TP 1](tp-01-premiere-contribution.md) | dépôt créé + 2 PR mergées + 1 revue par étudiant |
+| **1** (2 h 15) | Démo du cycle au tableau, puis [TP 1](tp-01-premiere-contribution.md) | dépôt d'équipe créé + 2 PR mergées + 1 revue par étudiant |
 | **2** (1 h) | [TP 2](tp-02-ci-rouge.md) — lire et corriger une CI rouge | tableau de synthèse |
-| **3** (1 h 30) | [TP 3](tp-03-revue-et-conflits.md) — revue et conflits | PR fusionnée après conflit + débriefing |
+| **3** (1 h 35) | [TP 3](tp-03-revue-et-conflits.md) — revue et conflits, 2 équipes sur 1 dépôt | PR fusionnée après conflit + débriefing |
 
 ### Points à marteler
 
@@ -179,7 +191,7 @@ d'acceptation est partagé.
 
 ## 6. Évaluation
 
-Chaque binôme a son dépôt : demandez-leur de rendre simplement **l'URL**. Tout
+Chaque équipe a son dépôt : demandez-leur de rendre simplement **l'URL**. Tout
 est ensuite vérifiable en ligne de commande, sans cloner.
 
 ```bash

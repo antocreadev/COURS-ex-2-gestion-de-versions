@@ -132,7 +132,7 @@ gh pr status
 gh pr checks                          # état de la CI de ma PR
 gh pr view 34 --web
 gh pr diff 34
-gh pr checkout 34                     # récupérer la PR d'un binôme pour la tester
+gh pr checkout 34                     # récupérer la PR d'un coéquipier pour la tester
 gh pr review 34 --approve
 gh pr review 34 --request-changes -b "Il manque un test sur la série vide."
 gh pr merge --squash --delete-branch

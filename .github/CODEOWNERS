@@ -4,8 +4,8 @@
 # ⚠️ À ADAPTER À VOTRE BINÔME.
 #    Un login qui n'est pas collaborateur du dépôt est silencieusement ignoré
 #    par GitHub : la règle ne produit alors aucun effet.
-#    Remplacez @antocreadev par les deux logins de votre binôme, par exemple :
-#        *   @alice-martin @bob-durand
+#    Remplacez @antocreadev par les logins de votre équipe (2 ou 3), ex. :
+#        *   @alice-martin @bob-durand @camille-roux
 #    (Bon échauffement : faites-en votre première Pull Request.)
 #
 # Note : on ne peut pas s'auto-approuver. Un CODEOWNERS qui ne contient que

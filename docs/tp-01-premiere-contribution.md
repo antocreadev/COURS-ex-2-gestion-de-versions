@@ -22,24 +22,30 @@ push → PR → CI → revue → corrections → merge → ménage.
 Le dépôt de cours est en **lecture seule**. Vous allez en faire le vôtre : c'est
 sur *votre* dépôt que vous ouvrirez vos PR et que tournera *votre* CI.
 
-Mettez-vous d'accord dans le binôme : **un seul** dépôt pour les deux, créé par
-l'un de vous, l'autre étant ajouté en collaborateur. Vous vous relirez
-mutuellement.
+Mettez-vous d'accord dans l'équipe : **un seul** dépôt pour tout le monde, créé
+par l'un de vous, les autres étant ajoutés en collaborateurs. Vous vous relirez
+mutuellement. Binôme ou trinôme, le principe est le même — il faut juste être au
+moins deux, puisqu'on ne peut pas approuver sa propre PR.
+
+**Celui qui crée le dépôt** (une seule personne) :
 
 ```bash
 git clone https://github.com/antocreadev/COURS-ex-2-gestion-de-versions.git tp-gestion-de-versions
 cd tp-gestion-de-versions
 
 gh auth login                                        # une seule fois par machine
-./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_DU_BINOME
+
+# autant de logins que de coéquipiers, séparés par des espaces
+./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_B          # binôme
+./scripts/creer-mon-depot.sh tp-gestion-de-versions LOGIN_B LOGIN_C  # trinôme
 
 make install
 make hooks
 make check
 ```
 
-L'autre membre du binôme accepte l'invitation reçue par mail, puis clone le
-dépôt du binôme (et **pas** celui du cours) :
+**Les autres membres** acceptent l'invitation reçue par mail, puis clonent le
+dépôt de l'équipe (et **pas** celui du cours) :
 
 ```bash
 gh repo clone LOGIN_DU_CREATEUR/tp-gestion-de-versions
@@ -91,19 +97,20 @@ Avant d'attaquer du code, un aller-retour complet sur un changement d'une ligne,
 pour vérifier que toute la chaîne fonctionne.
 
 `.github/CODEOWNERS` contient encore `@antocreadev`, qui n'est pas collaborateur
-de votre dépôt : la règle ne sert donc à rien. Remplacez-le par vos deux logins.
+de votre dépôt : la règle ne sert donc à rien. Remplacez-le par les logins de
+votre équipe (tous, séparés par des espaces).
 
 ```bash
 git switch -c chore/codeowners-du-binome
-# éditez .github/CODEOWNERS : remplacez @antocreadev par @vous @votre-binome
+# éditez .github/CODEOWNERS : remplacez @antocreadev par @vous @coequipier1 [@coequipier2]
 git add .github/CODEOWNERS
-git commit -m "chore: désigne le binôme comme propriétaire du code"
+git commit -m "chore: désigne l'équipe comme propriétaire du code"
 git push -u origin chore/codeowners-du-binome
 gh pr create --fill --web
 ```
 
 Observez, dans l'ordre : la CI démarre, les checks apparaissent sous la PR, le
-bouton *Merge* reste grisé tant qu'ils ne sont pas verts et que votre binôme n'a
+bouton *Merge* reste grisé tant qu'ils ne sont pas verts et qu'un coéquipier n'a
 pas approuvé. Faites approuver, mergez en *squash*, supprimez la branche.
 
 ✅ **Point de contrôle 3 :** vous avez fait un tour complet du cycle en 10
@@ -208,13 +215,16 @@ gh pr checks --watch
 
 ## Partie E — Revue croisée (30 min)
 
-**Qui relit qui ?** Votre binôme : c'est le seul à avoir un droit d'écriture sur
-votre dépôt, donc le seul dont l'approbation débloque le bouton *Merge*. Vous
-avez chacun ouvert une PR sur des issues différentes : vous vous relisez
-mutuellement.
+**Qui relit qui ?** Vos coéquipiers : ce sont les seuls à avoir un droit
+d'écriture sur le dépôt, donc les seuls dont l'approbation débloque le bouton
+*Merge*. Vous avez chacun ouvert une PR sur une issue différente.
+
+- **Binôme** : vous vous relisez mutuellement.
+- **Trinôme** : relecture en cercle — A relit B, B relit C, C relit A. Personne
+  ne relit deux fois la même PR, et personne n'attend.
 
 > Votre dépôt est public : **n'importe qui** peut aussi commenter et relire vos
-> PR. Profitez-en pour échanger vos URL avec un autre binôme — leurs
+> PR. Profitez-en pour échanger vos URL avec une autre équipe — leurs
 > commentaires seront visibles et utiles, simplement leur *Approve* ne comptera
 > pas pour la protection de branche (GitHub n'accepte que les approbations de
 > personnes ayant les droits d'écriture).

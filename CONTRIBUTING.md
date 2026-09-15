@@ -155,10 +155,11 @@ gh pr create --fill --web
 
 ---
 
-## 6. Relire la PR d'un binôme
+## 6. Relire la PR d'un coéquipier
 
 La revue n'est pas un examen, c'est une **conversation**. Chacun relit au moins
-une PR par TP.
+une PR par TP. À trois, faites tourner la relecture en cercle : A relit B, B
+relit C, C relit A.
 
 ### Grille de relecture
 
