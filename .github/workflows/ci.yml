@@ -92,7 +92,7 @@ jobs:
 
       - name: Conserver les rapports (téléchargeables depuis l'onglet Actions)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rapports-python-${{ matrix.python-version }}
           path: |
