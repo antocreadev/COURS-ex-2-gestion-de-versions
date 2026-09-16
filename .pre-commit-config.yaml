@@ -34,6 +34,10 @@ repos:
       - id: no-commit-to-branch
         name: interdit de commiter directement sur main
         args: [--branch, main]
+        # Uniquement au commit : sans cette ligne, le hook se déclencherait
+        # aussi au `git push`, y compris pour le tout premier push de `main`
+        # vers un dépôt neuf (celui que fait scripts/creer-mon-depot.sh).
+        stages: [pre-commit]
 
   # --- Qualité du code Python --------------------------------------------
   - repo: https://github.com/astral-sh/ruff-pre-commit
