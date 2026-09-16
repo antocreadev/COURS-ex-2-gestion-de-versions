@@ -136,6 +136,7 @@ git push -u origin chore/mise-a-jour-depart   # puis PR, comme d'habitude
 | `.pre-commit-config.yaml` | Les hooks Git exécutés **avant** chaque commit |
 | `scripts/creer-mon-depot.sh` | Transforme ce clone en **votre** dépôt GitHub configuré |
 | `scripts/verifier_message_commit.py` | Hook `commit-msg` : valide le format des messages |
+| `scripts/dans-le-venv.sh` | Permet aux hooks de trouver les outils même si le venv n'est pas activé |
 | `.github/workflows/ci.yml` | La CI : lint, types, tests, couverture |
 | `.github/workflows/pr.yml` | Contrôles propres à la Pull Request (titre, taille) |
 | `.github/PULL_REQUEST_TEMPLATE.md` | Le formulaire pré-rempli de toute PR |

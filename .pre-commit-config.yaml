@@ -48,22 +48,25 @@ repos:
   # --- Hooks locaux -------------------------------------------------------
   - repo: local
     hooks:
+      # Ces hooks passent par scripts/dans-le-venv.sh : Git ne lance pas les
+      # hooks dans votre shell, il ne voit donc pas l'environnement virtuel que
+      # vous avez activé. Le script le retrouve tout seul.
       - id: message-de-commit
         name: valide le format du message de commit
-        entry: python scripts/verifier_message_commit.py
+        entry: scripts/dans-le-venv.sh python scripts/verifier_message_commit.py
         language: system
         stages: [commit-msg]
 
       - id: mypy
         name: mypy (types)
-        entry: mypy
+        entry: scripts/dans-le-venv.sh mypy
         language: system
         types: [python]
         pass_filenames: false
 
       - id: pytest
         name: pytest (avant push uniquement)
-        entry: pytest
+        entry: scripts/dans-le-venv.sh pytest
         language: system
         types: [python]
         pass_filenames: false
