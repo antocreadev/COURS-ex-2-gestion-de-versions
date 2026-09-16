@@ -61,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false # on veut voir TOUTES les versions qui cassent, pas la première
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v7
