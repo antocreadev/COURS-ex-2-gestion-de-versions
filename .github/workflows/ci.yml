@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Installer Python
         uses: actions/setup-python@v6
@@ -64,7 +64,7 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
     steps:
       - name: Récupérer le code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Installer Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -105,7 +105,7 @@ jobs:
     name: pre-commit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_DEFAUT }}
